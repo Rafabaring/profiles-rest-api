@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status # usado na post function
 
@@ -52,7 +53,7 @@ class HelloApiView(APIView):
                 )
 
 
-    def put(self, request, pk = None):
+    def put(self, request, pk = None): #pk = primary key
         """
         Handle updating an object
         """
@@ -71,3 +72,68 @@ class HelloApiView(APIView):
         Delete an object
         """
         return Response({'method': 'DELETE@'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """
+    Test API ViewSet
+    """
+    serializer_class = serializers.HelloSerializer
+
+    def list (self, request):
+        """
+        Return a hello message
+        """
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code'
+        ]
+
+        return Response ({'message_view_set': a_viewset})
+
+
+    # Very similiar to POST
+    def create(self, request):
+        """
+        Create a new Hello message
+        """
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name') # name é o nome da variavel no arquivo serializer
+            message = f'Hello from viewset {name}'
+            return Response ({"message": message})
+        else:
+            return Response(
+                    serializer.errors,
+                    status = status.HTTP_400_BAD_REQUEST
+                )
+
+
+    def retrieve(self, request, pk = None): #pk = primary key
+        """
+        Handle getting an object byt it's ID
+        """
+        return Response({'method maps to': 'GET'})
+
+
+    def update(self, request, pk = None): #pk = primary key
+        """
+        Handle updating an object
+        """
+        return Response({'method maps to': 'PUT'})
+
+
+    def partial_update(self, request, pk = None): #pk = primary key
+        """
+        Handle updating part of an object
+        """
+        return Response({'method maps to': 'PATCH'})
+
+
+    def destroy(self, request, pk = None): #pk = primary key
+        """
+        Handle removing an object
+        """
+        return Response({'method maps to': 'DELETE'})
